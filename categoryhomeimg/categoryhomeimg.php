@@ -27,7 +27,8 @@ class CategoryHomeImg extends Module
 		/* Adds Module */
 		if (parent::install() 
 			&& $this->registerHook('displayHeader') 
-			&& $this->registerHook('displayTopColumn') 
+			&& $this->registerHook('displayTopColumn')
+			&& $this->registerHook('displayHome') 
 			&& $this->registerHook('actionShopDataDuplication')
 			&& $this->registerHook('displayBackOfficeHeader')
 		)
@@ -41,9 +42,6 @@ class CategoryHomeImg extends Module
 			/* Adds samples */
 			if ($res)
 				$this->installSamples();
-
-			// Disable on mobiles and tablets
-			$this->disableDevice(Context::DEVICE_MOBILE);
 
 			return (bool)$res;
 		}
@@ -64,6 +62,7 @@ class CategoryHomeImg extends Module
 			&& $this->uninstallTab()
 			&& $this->unregisterHook('displayHeader')
 			&& $this->unregisterHook('displayTopColumn')
+			&& $this->unregisterHook('displayHome') 
 			&& $this->unregisterHook('actionShopDataDuplication')
 			&& $this->unregisterHook('displayBackOfficeHeader');
 		
@@ -447,6 +446,16 @@ class CategoryHomeImg extends Module
 	}
 
 	public function hookdisplayTopColumn($params)
+	{
+		$this->context->controller->addCSS($this->_path.'categoryhomeimg.css', 'all');
+
+		$categories = $this->getContentValues($this->context->language->id, $this->context->shop->id);
+		$this->context->smarty->assign(array('categories' => $categories));
+
+		return $this->display(__FILE__, 'categoryhomeimg.tpl');
+	}
+
+	public function hookdisplayHome($params)
 	{
 		$this->context->controller->addCSS($this->_path.'categoryhomeimg.css', 'all');
 
